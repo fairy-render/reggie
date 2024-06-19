@@ -21,6 +21,7 @@ mod internal {
 pub trait ResponseExt<B>: internal::Internal {
     fn text(self) -> BoxFuture<'static, Result<String, Error>>;
     fn bytes(self) -> BoxFuture<'static, Result<Bytes, Error>>;
+    #[cfg(feature = "json")]
     fn json<T: serde::de::DeserializeOwned>(self) -> BoxFuture<'static, Result<T, Error>>;
     fn bytes_stream(self) -> DataStream<B>;
 }
@@ -55,6 +56,7 @@ where
         })
     }
 
+    #[cfg(feature = "json")]
     fn json<T: serde::de::DeserializeOwned>(self) -> BoxFuture<'static, Result<T, Error>> {
         Box::pin(async move {
             use http_body_util::BodyExt;
