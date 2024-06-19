@@ -4,14 +4,17 @@ mod reqw {
 
     use crate::{Body, Error, HttpClient, HttpClientFactory};
 
-    impl HttpClientFactory for reqwest::Client {
+    #[derive(Default)]
+    pub struct Reqwest {}
+
+    impl HttpClientFactory for Reqwest {
         type Client<B> = reqwest::Client
         where
             B: http_body::Body + Send + 'static,
             B::Data: Into<Bytes>,
             B::Error: Into<Error>;
 
-        fn create<B>() -> Self::Client<B>
+        fn create<B>(&self) -> Self::Client<B>
         where
             B: http_body::Body + Send + 'static,
             B::Data: Into<Bytes>,
