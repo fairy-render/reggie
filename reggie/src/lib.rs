@@ -3,6 +3,7 @@ mod client;
 mod error;
 mod impls;
 mod response_ext;
+// mod service;
 
 pub use http::{HeaderMap, HeaderName, HeaderValue, Method, Request, Response};
 use std::sync::Arc;
