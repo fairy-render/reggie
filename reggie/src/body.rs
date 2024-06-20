@@ -77,6 +77,12 @@ impl http_body::Body for Body {
     }
 }
 
+impl<'a> From<&'a str> for Body {
+    fn from(value: &'a str) -> Self {
+        value.as_bytes().to_vec().into()
+    }
+}
+
 impl From<String> for Body {
     fn from(value: String) -> Self {
         value.into_bytes().into()
