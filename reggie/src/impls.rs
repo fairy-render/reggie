@@ -72,3 +72,6 @@ mod reqw {
         }
     }
 }
+
+#[cfg(feature = "reqwest")]
+pub use reqw::*;

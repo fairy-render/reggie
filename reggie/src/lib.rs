@@ -4,13 +4,15 @@ mod error;
 mod impls;
 mod response_ext;
 
-pub use self::{body::Body, client::*, error::Error, response_ext::ResponseExt};
+pub use http::{HeaderMap, HeaderName, HeaderValue, Method, Request, Response};
+use std::sync::Arc;
+
+#[allow(unused_imports)]
+pub use self::{body::Body, client::*, error::Error, impls::*, response_ext::ResponseExt};
 pub use bytes;
 pub use http;
-use http::{Request, Response};
 pub use http_body;
 pub use http_body_util;
-use std::sync::Arc;
 
 #[derive(Clone)]
 pub struct Client {
