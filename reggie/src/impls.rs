@@ -4,7 +4,7 @@ mod reqw {
 
     use crate::{Body, Error, HttpClient, HttpClientFactory};
 
-    #[derive(Default)]
+    #[derive(Default, Clone)]
     pub struct Reqwest {}
 
     impl HttpClientFactory for Reqwest {
