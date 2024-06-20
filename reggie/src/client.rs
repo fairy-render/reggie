@@ -23,6 +23,32 @@ pub trait HttpClient<B> {
     where
         Self: 'a;
     fn send<'a>(&'a self, request: http::Request<B>) -> Self::Future<'a>;
+
+    fn boxed(self) -> BoxClient<B>
+    where
+        Self: Sized + Send + Sync + 'static,
+        B: http_body::Body + Send + 'static,
+        Self::Body: Into<Body>,
+        for<'a> Self::Future<'a>: Send,
+    {
+        Box::new(BoxedClient {
+            client: self,
+            body: PhantomData,
+        })
+    }
+
+    fn shared(self) -> SharedClient<B>
+    where
+        Self: Sized + Send + Sync + 'static,
+        B: http_body::Body + Send + 'static,
+        Self::Body: Into<Body>,
+        for<'a> Self::Future<'a>: Send,
+    {
+        Arc::new(BoxedClient {
+            client: self,
+            body: PhantomData,
+        })
+    }
 }
 
 pub trait DynamicClient<B> {
@@ -60,35 +86,35 @@ where
     }
 }
 
-pub trait HttpClientExt<B>: HttpClient<B> {
-    fn boxed(self) -> BoxClient<B>
-    where
-        Self: Sized + Send + Sync + 'static,
-        B: http_body::Body + Send + 'static,
-        Self::Body: Into<Body>,
-        for<'a> Self::Future<'a>: Send,
-    {
-        Box::new(BoxedClient {
-            client: self,
-            body: PhantomData,
-        })
-    }
+// pub trait HttpClientExt<B>: HttpClient<B> {
+//     fn boxed(self) -> BoxClient<B>
+//     where
+//         Self: Sized + Send + Sync + 'static,
+//         B: http_body::Body + Send + 'static,
+//         Self::Body: Into<Body>,
+//         for<'a> Self::Future<'a>: Send,
+//     {
+//         Box::new(BoxedClient {
+//             client: self,
+//             body: PhantomData,
+//         })
+//     }
 
-    fn shared(self) -> SharedClient<B>
-    where
-        Self: Sized + Send + Sync + 'static,
-        B: http_body::Body + Send + 'static,
-        Self::Body: Into<Body>,
-        for<'a> Self::Future<'a>: Send,
-    {
-        Arc::new(BoxedClient {
-            client: self,
-            body: PhantomData,
-        })
-    }
-}
+//     fn shared(self) -> SharedClient<B>
+//     where
+//         Self: Sized + Send + Sync + 'static,
+//         B: http_body::Body + Send + 'static,
+//         Self::Body: Into<Body>,
+//         for<'a> Self::Future<'a>: Send,
+//     {
+//         Arc::new(BoxedClient {
+//             client: self,
+//             body: PhantomData,
+//         })
+//     }
+// }
 
-impl<T, B> HttpClientExt<B> for T where T: HttpClient<B> {}
+// impl<T, B> HttpClientExt<B> for T where T: HttpClient<B> {}
 
 pub type BoxClient<B> = Box<dyn DynamicClient<B, Body = Body> + Send + Sync>;
 pub type SharedClient<B> = Arc<dyn DynamicClient<B, Body = Body> + Send + Sync>;

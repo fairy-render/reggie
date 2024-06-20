@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [features]
-default = ["tower-service", "reqwest"]
+default = []
 reqwest = ["dep:reqwest"]
 json = ["serde", "serde_json"]
 tower = ["tower-service"]
@@ -18,11 +18,8 @@ futures-core = { version = "0.3", default-features = false, features = [
 ] }
 bytes = { version = "1", default-features = false }
 
-# Json
+# Optional
 serde_json = { version = "1", optional = true }
 serde = { version = "1", optional = true }
-
-# Rewest
 reqwest = { version = "0.12", optional = true }
-
 tower-service = { version = "0.3", optional = true }
