@@ -1,10 +1,8 @@
-use core::marker::PhantomData;
-use std::sync::Arc;
-
-use bytes::Bytes;
-use futures_core::future::BoxFuture;
-
 use crate::{body::Body, error::Error};
+use bytes::Bytes;
+use core::marker::PhantomData;
+use futures_core::future::BoxFuture;
+use std::sync::Arc;
 
 pub trait HttpClientFactory {
     type Client<B>: HttpClient<B>
