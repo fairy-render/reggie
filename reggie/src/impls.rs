@@ -2,7 +2,7 @@
 mod reqw {
     use bytes::Bytes;
 
-    use crate::{Body, Error, HttpClient, HttpClientFactory};
+    use crate::{Body, DynamicClient, Error, HttpClient, HttpClientFactory};
 
     #[derive(Default, Clone)]
     pub struct Reqwest {}
@@ -43,6 +43,8 @@ mod reqw {
         B::Error: Into<Error>,
     {
         type Body = reqwest::Body;
+        type Future<'a> =
+            futures_core::future::BoxFuture<'a, Result<http::Response<Self::Body>, Error>>;
         fn send<'a>(
             &'a self,
             request: http::Request<B>,
@@ -69,6 +71,23 @@ mod reqw {
 
                 Ok(resp.into())
             })
+        }
+    }
+
+    impl<B> DynamicClient<B> for reqwest::Client
+    where
+        B: http_body::Body + Send + 'static,
+        B::Data: Into<Bytes>,
+        B::Error: Into<Error>,
+    {
+        type Body = reqwest::Body;
+
+        fn send<'a>(
+            &'a self,
+            request: http::Request<B>,
+        ) -> futures_core::future::BoxFuture<'a, Result<http::Response<Self::Body>, Error>>
+        {
+            <reqwest::Client as HttpClient<B>>::send(&self, request)
         }
     }
 }

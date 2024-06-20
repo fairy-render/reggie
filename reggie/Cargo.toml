@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [features]
-default = ["tower-service"]
+default = ["tower-service", "reqwest"]
 reqwest = ["dep:reqwest"]
 json = ["serde", "serde_json"]
 tower = ["tower-service"]

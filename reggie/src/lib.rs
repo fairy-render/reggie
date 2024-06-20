@@ -24,6 +24,7 @@ impl Client {
     pub fn new<T: HttpClient<Body> + Send + Sync + 'static>(client: T) -> Client
     where
         T::Body: Into<Body>,
+        for<'a> T::Future<'a>: Send,
     {
         Client {
             inner: client.shared(),
@@ -59,6 +60,7 @@ impl<T> ClientFactory for BoxedClientFactory<T>
 where
     T: HttpClientFactory,
     T::Client<Body>: Send + Sync + 'static,
+    for<'a> <T::Client<Body> as HttpClient<Body>>::Future<'a>: Send,
     <T::Client<Body> as HttpClient<Body>>::Body: Into<Body>,
 {
     fn create(&self) -> Client {
@@ -70,6 +72,7 @@ pub fn factory_box<T>(factory: T) -> BoxClientFactory
 where
     T: HttpClientFactory + Send + Sync + 'static,
     T::Client<Body>: Send + Sync + 'static,
+    for<'a> <T::Client<Body> as HttpClient<Body>>::Future<'a>: Send,
     <T::Client<Body> as HttpClient<Body>>::Body: Into<Body>,
 {
     Box::new(BoxedClientFactory(factory))
@@ -79,6 +82,7 @@ pub fn factory_arc<T>(factory: T) -> SharedClientFactory
 where
     T: HttpClientFactory + Send + Sync + 'static,
     T::Client<Body>: Send + Sync + 'static,
+    for<'a> <T::Client<Body> as HttpClient<Body>>::Future<'a>: Send,
     <T::Client<Body> as HttpClient<Body>>::Body: Into<Body>,
 {
     Arc::new(BoxedClientFactory(factory))
