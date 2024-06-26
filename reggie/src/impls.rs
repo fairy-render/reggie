@@ -11,14 +11,14 @@ mod reqw {
         type Client<B> = reqwest::Client
         where
             B: http_body::Body + Send + 'static,
-            B::Data: Into<Bytes>,
-            B::Error: Into<Error>;
+            B::Data: Into<Bytes> + Send,
+            B::Error: Into<Error> + Send;
 
         fn create<B>(&self) -> Self::Client<B>
         where
             B: http_body::Body + Send + 'static,
-            B::Data: Into<Bytes>,
-            B::Error: Into<Error>,
+            B::Data: Into<Bytes> + Send,
+            B::Error: Into<Error> + Send,
         {
             reqwest::Client::new()
         }
@@ -39,8 +39,8 @@ mod reqw {
     impl<B> HttpClient<B> for reqwest::Client
     where
         B: http_body::Body + Send + 'static,
-        B::Data: Into<Bytes>,
-        B::Error: Into<Error>,
+        B::Data: Into<Bytes> + Send,
+        B::Error: Into<Error> + Send,
     {
         type Body = reqwest::Body;
         type Future<'a> =
@@ -77,8 +77,8 @@ mod reqw {
     impl<B> DynamicClient<B> for reqwest::Client
     where
         B: http_body::Body + Send + 'static,
-        B::Data: Into<Bytes>,
-        B::Error: Into<Error>,
+        B::Data: Into<Bytes> + Send,
+        B::Error: Into<Error> + Send,
     {
         type Body = reqwest::Body;
 
