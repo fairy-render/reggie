@@ -8,13 +8,13 @@ pub trait HttpClientFactory {
     type Client<B>: HttpClient<B>
     where
         B: http_body::Body + Send + 'static,
-        B::Data: Into<Bytes>,
-        B::Error: Into<Error>;
+        B::Data: Into<Bytes> + Send,
+        B::Error: Into<Error> + Send;
     fn create<B>(&self) -> Self::Client<B>
     where
         B: http_body::Body + Send + 'static,
-        B::Data: Into<Bytes>,
-        B::Error: Into<Error>;
+        B::Data: Into<Bytes> + Send,
+        B::Error: Into<Error> + Send;
 }
 
 pub trait HttpClient<B> {
