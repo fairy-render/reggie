@@ -131,18 +131,6 @@ where
         .map_err(Into::into)
 }
 
-pub async fn to_json<T: http_body::Body>(body: T) -> Result<Bytes, Error>
-where
-    T::Error: Into<Error>,
-{
-    use http_body_util::BodyExt;
-
-    BodyExt::collect(body)
-        .await
-        .map(|buf| buf.to_bytes())
-        .map_err(Into::into)
-}
-
 #[cfg(feature = "json")]
 pub async fn to_json<T: serde::de::DeserializeOwned>(self) -> Result<T, Error> {
     use http_body_util::BodyExt;
