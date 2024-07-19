@@ -75,7 +75,7 @@ where
     }
 }
 
-pub struct DataStream<T>(T);
+pub struct DataStream<T>(pub(crate) T);
 
 impl<B> futures_core::Stream for DataStream<B>
 where

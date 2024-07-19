@@ -1,4 +1,4 @@
-use crate::error::Error;
+use crate::{error::Error, response_ext::DataStream};
 use bytes::Bytes;
 use core::{pin::Pin, task::Poll};
 use http_body_util::combinators::UnsyncBoxBody;
@@ -153,4 +153,8 @@ pub async fn to_json<T: serde::de::DeserializeOwned>(self) -> Result<T, Error> {
         .map_err(Into::into)?;
 
     serde_json::from_slice::<T>(&bytes).map_err(|err| Error::Body(Box::new(err)))
+}
+
+pub async fn to_stream<T: http_body::Body>(body: T) -> DataStream<T> {
+    DataStream(body)
 }
