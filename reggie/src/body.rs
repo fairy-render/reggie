@@ -148,6 +148,6 @@ where
     serde_json::from_slice::<T>(&bytes).map_err(|err| Error::Body(Box::new(err)))
 }
 
-pub async fn to_stream<T: http_body::Body>(body: T) -> DataStream<T> {
+pub fn to_stream<T: http_body::Body>(body: T) -> DataStream<T> {
     DataStream(body)
 }
