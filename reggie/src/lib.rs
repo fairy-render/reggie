@@ -1,4 +1,4 @@
-mod body;
+pub mod body;
 mod client;
 mod error;
 mod impls;

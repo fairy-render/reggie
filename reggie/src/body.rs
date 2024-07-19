@@ -104,3 +104,53 @@ impl From<Bytes> for Body {
         }
     }
 }
+
+pub async fn to_text<T: http_body::Body>(body: T) -> Result<String, Error>
+where
+    T::Error: Into<Error>,
+{
+    use http_body_util::BodyExt;
+
+    let bytes = BodyExt::collect(body)
+        .await
+        .map(|buf| buf.to_bytes())
+        .map_err(Into::into)?;
+
+    String::from_utf8(bytes.to_vec()).map_err(|err| Error::Body(Box::new(err)))
+}
+
+pub async fn to_bytes<T: http_body::Body>(body: T) -> Result<Bytes, Error>
+where
+    T::Error: Into<Error>,
+{
+    use http_body_util::BodyExt;
+
+    BodyExt::collect(body)
+        .await
+        .map(|buf| buf.to_bytes())
+        .map_err(Into::into)
+}
+
+pub async fn to_json<T: http_body::Body>(body: T) -> Result<Bytes, Error>
+where
+    T::Error: Into<Error>,
+{
+    use http_body_util::BodyExt;
+
+    BodyExt::collect(body)
+        .await
+        .map(|buf| buf.to_bytes())
+        .map_err(Into::into)
+}
+
+#[cfg(feature = "json")]
+pub async fn to_json<T: serde::de::DeserializeOwned>(self) -> Result<T, Error> {
+    use http_body_util::BodyExt;
+
+    let bytes = BodyExt::collect(self.into_body())
+        .await
+        .map(|buf| buf.to_bytes())
+        .map_err(Into::into)?;
+
+    serde_json::from_slice::<T>(&bytes).map_err(|err| Error::Body(Box::new(err)))
+}
