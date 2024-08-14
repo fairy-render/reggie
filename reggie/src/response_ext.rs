@@ -24,6 +24,7 @@ pub trait ResponseExt<B>: internal::Internal {
     #[cfg(feature = "json")]
     fn json<T: serde::de::DeserializeOwned>(self) -> BoxFuture<'static, Result<T, Error>>;
     fn bytes_stream(self) -> DataStream<B>;
+    fn map_body<T: FnOnce(B) -> U, U>(self, func: T) -> Response<U>;
 }
 
 impl<B> ResponseExt<B> for Response<B>
@@ -72,6 +73,11 @@ where
 
     fn bytes_stream(self) -> DataStream<B> {
         DataStream(self.into_body())
+    }
+
+    fn map_body<T: FnOnce(B) -> U, U>(self, func: T) -> Response<U> {
+        let (parts, body) = self.into_parts();
+        Response::from_parts(parts, func(body))
     }
 }
 
