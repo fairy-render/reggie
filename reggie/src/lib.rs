@@ -2,6 +2,7 @@ pub mod body;
 mod client;
 mod error;
 mod impls;
+mod request_ext;
 mod response_ext;
 #[cfg(feature = "tower")]
 pub mod service;
@@ -10,7 +11,10 @@ pub use http::{HeaderMap, HeaderName, HeaderValue, Method, Request, Response};
 use std::sync::Arc;
 
 #[allow(unused_imports)]
-pub use self::{body::Body, client::*, error::Error, impls::*, response_ext::ResponseExt};
+pub use self::{
+    body::Body, client::*, error::Error, impls::*, request_ext::RequestExt,
+    response_ext::ResponseExt,
+};
 pub use bytes;
 pub use http;
 pub use http_body;
