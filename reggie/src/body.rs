@@ -1,11 +1,11 @@
 use crate::{error::Error, response_ext::DataStream};
 use bytes::Bytes;
 use core::{pin::Pin, task::Poll};
-use http_body_util::combinators::UnsyncBoxBody;
+use http_body_util::combinators::BoxBody;
 
 enum Inner {
     Reusable(Bytes),
-    Streaming(UnsyncBoxBody<Bytes, Error>),
+    Streaming(BoxBody<Bytes, Error>),
 }
 
 pub struct Body {
@@ -21,7 +21,7 @@ impl Body {
 
     pub fn from_streaming<B: http_body::Body>(inner: B) -> Body
     where
-        B: Send + 'static,
+        B: Send + Sync + 'static,
         B::Error: Into<Error>,
         B::Data: Into<Bytes>,
     {
@@ -30,7 +30,7 @@ impl Body {
         let boxed = inner
             .map_frame(|f| f.map_data(Into::into))
             .map_err(Into::into)
-            .boxed_unsync();
+            .boxed();
 
         Body {
             inner: Inner::Streaming(boxed),
